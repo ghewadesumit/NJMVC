@@ -5,7 +5,11 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "server":"nodemon",
+    "client":"npm start --prefix mvc_appointment_milega",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+    
   },
   "author": "",
   "license": "ISC",
@@ -19,5 +23,9 @@
     "open": "^8.2.1",
     "request-promise": "^4.2.6",
     "router": "^1.3.5"
+  },
+  "devDependencies": {
+    "concurrently": "^6.2.1",
+    "nodemon": "^2.0.12"
   }
 }

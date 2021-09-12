@@ -19,29 +19,32 @@ router.post('/', (req, res) => {
 
   const mvcPromise = new Promise((resolve, reject) => {
     setInterval(async () => {
-      try {
-        console.log(`${mvcLocationNumber}   ${mvcURL} ${requiredMonths}`);
-        const mvcResult = await mvcSearch.mvcAppointmentSearch(
-          mvcLocationNumber,
-          mvcURL,
-          selectedLocation,
-          requiredMonths
-        );
+      const mvcResult = [];
+      for (let i = 0; i < mvcLocationNumber.length; i++) {
+        console.log('TRyiiiinnggg for location', selectedLocation[i]);
+        try {
+          console.log(`${mvcLocationNumber}   ${mvcURL} ${requiredMonths}`);
+          const currentUrl = mvcURL + mvcLocationNumber[i];
 
-        console.log('result is', mvcResult);
+          const mvcResultTemp = await mvcSearch.mvcAppointmentSearch(
+            mvcLocationNumber,
+            i,
+            currentUrl,
+            selectedLocation,
+            requiredMonths
+          );
 
-        if (mvcResult.isFound) {
-          resolve(mvcResult);
-          console.log('trueeeeee');
-        } else if (!mvcResult.isFound) {
+          console.log('mcvResult Temp answer is', mvcResultTemp);
+          mvcResult.push(mvcResultTemp);
+
+          console.log('result is', mvcResult);
+        } catch (err) {
+          console.log(err);
           reject(mvcResult);
           console.log('falseeeeee');
         }
-      } catch (err) {
-        console.log(err);
-        reject(mvcResult);
-        console.log('falseeeeee');
       }
+      resolve(mvcResult);
     }, 30 * 1000);
   });
 

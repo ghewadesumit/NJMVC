@@ -21,26 +21,25 @@ const findMVCLocationNumber = (mvcLocation, selectedLocation) => {
 /** Starting point of the search application */
 const mvcAppointmentSearch = async (
   mvcLocationNumber,
+  mvcIndex,
   mvcURL,
   mvcLocation,
   requiredMonths
 ) => {
-  for (let i = 0; i < mvcLocationNumber.length; i++) {
-    const currentUrl = mvcURL + mvcLocationNumber[i];
-    // console.log(mvcLocationNumber[i]);
-    try {
-      const callUrlResult = await callUrl(
-        currentUrl,
-        i,
-        mvcLocationNumber,
-        mvcLocation,
-        requiredMonths
-      );
-      console.log('data of appointment Search is', callUrlResult);
-      return callUrlResult;
-    } catch (err) {
-      console.log('error for appointment search is ', err);
-    }
+  // const currentUrl = mvcURL + mvcLocationNumber[i];
+  // console.log(mvcLocationNumber[i]);
+  try {
+    const callUrlResult = await callUrl(
+      mvcURL,
+      mvcIndex,
+      mvcLocationNumber,
+      mvcLocation,
+      requiredMonths
+    );
+    console.log('data of appointment Search is', callUrlResult);
+    return callUrlResult;
+  } catch (err) {
+    console.log('error for appointment search is ', err);
   }
 };
 
@@ -81,14 +80,14 @@ const getData = (
 ) => {
   let $ = cheerio.load(html);
 
-  console.log($);
+  // console.log($);
 
   $.prototype.exists = function (selector) {
     return this.find(selector).length > 0;
   };
 
   const checkerLength = $('div').exists('.alert-danger');
-  console.log('checkerLength is', checkerLength);
+  // console.log('checkerLength is', checkerLength);
   if (checkerLength) {
     console.log(
       `No appointment available in ${mvcLocation[locationNumberIndex]}`
@@ -98,12 +97,12 @@ const getData = (
     const dateString = $('.control-label').text();
     const availableMonth = dateString.trim().split(' ')[7];
     const exactDateAvailability = dateString.slice(24, -1);
-    console.log(
-      'Date string is of cheerio',
-      dateString,
-      'sadasd asdasd',
-      dateStringOne
-    );
+    // console.log(
+    //   'Date string is of cheerio',
+    //   dateString,
+    //   'sadasd asdasd',
+    //   dateStringOne
+    // );
     console.log('Available month is', availableMonth);
     if (requiredMonths.includes(availableMonth)) {
       console.log('Hurray there is an appointment available');
@@ -116,7 +115,11 @@ const getData = (
       };
     } else {
       console.log('required Month is not available still searching');
-      return { msg: 'Still searching', isFound: false };
+      return {
+        location: mvcLocation[locationNumberIndex],
+        msg: 'Still searching',
+        isFound: false,
+      };
     }
   }
 };
