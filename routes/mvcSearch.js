@@ -9,6 +9,10 @@ const mvcSearch = require('./mvcAlgo');
 router.post('/', (req, res) => {
   console.log(req.body);
   const { selectedLocation, requiredMonths, appointmentType } = req.body;
+
+  console.log(
+    '************************************Server is still running***********************************'
+  );
   console.log('Selected location is', selectedLocation);
   const currentAppointmentData = mvcSearch.findMVCData(appointmentType);
   const mvcURL = currentAppointmentData.url;
@@ -18,12 +22,14 @@ router.post('/', (req, res) => {
   );
 
   const mvcPromise = new Promise((resolve, reject) => {
-    setInterval(async () => {
+    // setInterval(async () => {
+
+    (async () => {
       const mvcResult = [];
       for (let i = 0; i < mvcLocationNumber.length; i++) {
         console.log('TRyiiiinnggg for location', selectedLocation[i]);
         try {
-          console.log(`${mvcLocationNumber}   ${mvcURL} ${requiredMonths}`);
+          console.log(`${mvcLocationNumber} ${mvcURL} ${requiredMonths}`);
           const currentUrl = mvcURL + mvcLocationNumber[i];
 
           const mvcResultTemp = await mvcSearch.mvcAppointmentSearch(
@@ -45,22 +51,25 @@ router.post('/', (req, res) => {
         }
       }
       resolve(mvcResult);
-    }, 30 * 1000);
+    })();
+    // }, 30 * 1000);
   });
 
-  mvcPromise
-    .then((response) => {
-      console.log('response is', response);
-      res.json({
-        data: response,
+  (async () => {
+    await mvcPromise
+      .then((response) => {
+        console.log('response is', response);
+        res.json({
+          data: response,
+        });
+      })
+      .catch((err) => {
+        res.json({
+          error: 'Some error occured sorry',
+          data: err,
+        });
       });
-    })
-    .catch((err) => {
-      res.json({
-        error: 'Some error occured sorry',
-        data: err,
-      });
-    });
+  })().catch((e) => console.log('Caught: ' + e));
 });
 
 module.exports = router;
